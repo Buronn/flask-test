@@ -1,5 +1,5 @@
-CREATE DATABASE roytuts;
-use roytuts;
+CREATE DATABASE calendapp;
+use calendapp;
 
 CREATE TABLE `user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
