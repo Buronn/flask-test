@@ -1,23 +1,30 @@
-version: "3.9"
+version: '3.5'
 services:
   app:
     build: ./app
-    links:
-      - db
     ports:
       - "5000:5000"
     volumes:
       - ./app:/app
     environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: calendapp
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
       FLASK_ENV: development
-    
-  db:
-    image: mysql:8.0.21
-    command: --default-authentication-plugin=caching_sha2_password
-    restart: always
+    links:
+      - postgres
+    restart: on-failure
+  postgres:
+    image: postgres:9.6
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: calendapp
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/:ro
+      - ./db:/var/lib/postgresql/data
+    restart: always
+    
