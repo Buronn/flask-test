@@ -52,3 +52,63 @@ def register():
             'message': 'Registered successfully.',
             'token': user.generate_token()
         })
+
+@app.route('/api/logout', methods=['POST', 'GET'])
+def logout():
+    session.pop('username', None)
+    return jsonify({
+        'status': 'success',
+        'message': 'Logged out successfully.'
+    })
+
+@app.route('/api/me', methods=['GET'])
+def me():
+    username = session.get('username')
+    if username:
+        user = User.query.filter_by(username=username).first()
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'username': user.username,
+                'email': user.email,
+                'career': user.career,
+                'semestre': user.semestre
+            }
+        })
+    else:
+        return jsonify({
+            'status': 'fail',
+            'message': 'No user is logged in.'
+        })
+
+@app.route('/api/users', methods=['GET'])
+def users():
+    users = User.query.all()
+    return jsonify({
+        'status': 'success',
+        'data': [{
+            'username': user.username,
+            'email': user.email,
+            'career': user.career,
+            'semestre': user.semestre
+        } for user in users]
+    })
+
+@app.route('/api/users/<username>', methods=['GET'])
+def user(username):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'username': user.username,
+                'email': user.email,
+                'career': user.career,
+                'semestre': user.semestre
+            }
+        })
+    else:
+        return jsonify({
+            'status': 'fail',
+            'message': 'No user with that username exists.'
+        })
