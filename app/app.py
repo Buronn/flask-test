@@ -44,7 +44,9 @@ def register():
             'message': 'Username already exists.'
         })
     else:
-        user = User(username=username, email=email, career=career, semestre=semestre)
+        # console log
+        print(username, password, email, career, semestre)
+        user = User(username=username, email=email, career=career, semestre=semestre, )
         user.set_password(password)
         user.save()
         return jsonify({

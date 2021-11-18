@@ -29,3 +29,21 @@ class User(db.Model):
         db.session.commit()
     def generate_token(self):
         pass
+class Curso(db.Model):
+    __tablename__ = 'cursos'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(80), unique=True, nullable=False)
+    descripcion = db.Column(db.String(240), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    def __repr__(self):
+        return '<Curso %r>' % self.nombre
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    def update(self):
+        db.session.commit()
+    def generate_token(self):
+        pass
