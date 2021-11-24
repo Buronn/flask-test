@@ -46,7 +46,8 @@ def register():
     else:
         # console log
         print(username, password, email, career, semestre)
-        user = User(username=username, email=email, career=career, semestre=semestre, )
+        user = User(username=username, email=email,
+                    career=career, semestre=semestre, )
         user.set_password(password)
         user.save()
         return jsonify({
@@ -55,6 +56,7 @@ def register():
             'token': user.generate_token()
         })
 
+
 @app.route('/api/logout', methods=['POST', 'GET'])
 def logout():
     session.pop('username', None)
@@ -62,6 +64,7 @@ def logout():
         'status': 'success',
         'message': 'Logged out successfully.'
     })
+
 
 @app.route('/api/me', methods=['GET'])
 def me():
@@ -83,34 +86,50 @@ def me():
             'message': 'No user is logged in.'
         })
 
+
 @app.route('/api/users', methods=['GET'])
 def users():
-    users = User.query.all()
-    return jsonify({
-        'status': 'success',
-        'data': [{
-            'username': user.username,
-            'email': user.email,
-            'career': user.career,
-            'semestre': user.semestre
-        } for user in users]
-    })
-
-@app.route('/api/users/<username>', methods=['GET'])
-def user(username):
-    user = User.query.filter_by(username=username).first()
-    if user:
+    actual_username = session.get('username')
+    if actual_username:
+        users = User.query.all()
         return jsonify({
             'status': 'success',
-            'data': {
+            'data': [{
                 'username': user.username,
                 'email': user.email,
                 'career': user.career,
                 'semestre': user.semestre
-            }
+            } for user in users]
         })
     else:
         return jsonify({
             'status': 'fail',
-            'message': 'No user with that username exists.'
+            'message': 'No user is logged in.'
+        })
+
+
+@app.route('/api/users/<username>', methods=['GET'])
+def user(username):
+    actual_username = session.get('username')
+    if actual_username:
+        user = User.query.filter_by(username=username).first()
+        if user:
+            return jsonify({
+                'status': 'success',
+                'data': {
+                    'username': user.username,
+                    'email': user.email,
+                    'career': user.career,
+                    'semestre': user.semestre
+                }
+            })
+        else:
+            return jsonify({
+                'status': 'fail',
+                'message': 'No user with that username exists.'
+            })
+    else:
+        return jsonify({
+            'status': 'fail',
+            'message': 'No user is logged in.'
         })
