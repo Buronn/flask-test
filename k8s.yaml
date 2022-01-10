@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-test
+spec:
+  selector:
+    matchLabels:
+      run: flask-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: flask-test
+    spec:
+      containers:
+      - name: flask-test
+        image: flask-test
+        ports:
+        - containerPort: 5000
+        env:
+        - name: POSTGRES_USER
+          value: root
+        - name: POSTGRES_PASSWORD
+          value: root
+        - name: POSTGRES_DB
+          value: calendapp
+        - name: POSTGRES_HOST
+          value: postgres
+        - name: POSTGRES_PORT
+          value: 5432
+        - name: FLASK_ENV
+          value: development
+      - name: postgres
+        image: postgres:9.6
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: root
+        - name: POSTGRES_PASSWORD
+          value: root
+        - name: POSTGRES_DB
+          value: calendapp
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-test
+  labels:
+    run: flask-test
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    run: flask-test
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    run: postgres
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    run: postgres
+---
+apiVersion: v1
+kind: Ingress
+metadata:
+  name: flask-test
+  annotations:
+    
